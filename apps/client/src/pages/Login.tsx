@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const data = await api<{ accessToken: string; refreshToken: string }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await api<{ accessToken: string; refreshToken: string }>(
+        '/auth/login',
+        {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+        },
+      );
 
       localStorage.setItem('accessToken', data.accessToken);
-      alert('Logged in!');
+      navigate('/dashboard');
     } catch (err: any) {
       alert(`Login failed: ${err.message}`);
     }
@@ -36,7 +41,10 @@ export default function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button className="bg-blue-500 text-white py-2 px-4" onClick={handleLogin}>
+      <button
+        className="bg-blue-500 text-white py-2 px-4"
+        onClick={handleLogin}
+      >
         Login
       </button>
     </div>

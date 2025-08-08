@@ -15,3 +15,4 @@ export async function api<T>(endpoint: string, options: RequestInit = {}): Promi
 
   return res.json();
 }
+

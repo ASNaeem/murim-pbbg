@@ -7,10 +7,11 @@ const prisma = new PrismaClient();
 
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password, name } = req.body;
 
-    if (!email || !password || !name) {
-      return res.status(400).json({ error: 'Email, password, and name are required' });
+    const { email, password, username } = req.body;
+
+    if (!email || !password || !username) {
+      return res.status(400).json({ error: 'Email, password, and username are required' });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -18,12 +19,13 @@ export async function register(req: Request, res: Response) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         character: {
-          create: { name }
+          create: { name: username }
         }
       }
     });

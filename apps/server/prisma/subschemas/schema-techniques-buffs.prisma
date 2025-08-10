@@ -1,0 +1,34 @@
+model Technique {
+  id           String         @id @default(uuid())
+  name         String
+  description  String
+  techniqueType TechniqueType
+  weaponSlot   EquipmentSlot?
+  cooldownSec  Int?
+  durationSec  Int?
+  buffs        Buff[]
+
+  createdAt    DateTime       @default(now())
+}
+
+model Buff {
+  id           String       @id @default(uuid())
+  techniqueId  String
+  stat         CharacterStat
+  amount       Float
+
+  technique    Technique    @relation(fields: [techniqueId], references: [id])
+}
+
+model CharacterTechnique {
+  id           String     @id @default(uuid())
+  characterId  String
+  techniqueId  String
+  unlockedAt   DateTime   @default(now())
+
+  character    Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  technique    Technique  @relation(fields: [techniqueId], references: [id])
+
+  @@unique([characterId, techniqueId])
+  @@map("character_techniques")
+}

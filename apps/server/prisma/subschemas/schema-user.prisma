@@ -1,0 +1,43 @@
+model User {
+  id         String     @id @default(uuid())
+  email      String     @unique
+  password   String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  character  Character?
+
+  @@map("users")
+}
+
+model Character {
+  id           String                @id @default(uuid())
+  userId       String                @unique
+  name         String
+  silverTaels  Int                   @default(0)
+  health       Int                   @default(100)
+  stamina      Int                   @default(100)
+  maxStamina   Int                   @default(100)
+  attack       Int                   @default(5)
+  defense      Int                   @default(5)
+  evasion      Int                   @default(5)
+  accuracy     Int                   @default(5)
+  wisdom       Int                   @default(5)
+  intelligence Int                   @default(5)
+  charisma     Int                   @default(5)
+  critChance   Float                 @default(0)
+  alignment    Alignment             @default(NEUTRAL)
+  lastTick     DateTime              @default(now())
+
+  user         User                  @relation(fields: [userId], references: [id])
+  inventory    InventoryItem[]
+  equipped     InventoryItem[]       @relation("EquippedItems")
+  achievements CharacterAchievement[]
+  techniques   CharacterTechnique[]
+  crimes       CharacterCrime[]
+  attackerMatches PvPMatch[]         @relation("AttackerMatches")
+  defenderMatches PvPMatch[]         @relation("DefenderMatches")
+  winnerMatches   PvPMatch[]         @relation("WinnerMatches")
+  pvpRating    PvPRating?
+
+  @@map("characters")
+}

@@ -1,0 +1,54 @@
+model Achievement {
+  id           String                  @id @default(uuid())
+  name         String
+  description  String
+  category     AchievementCategory
+  tier         Int                     @default(1)
+  targetValue  Int
+  medalId      String?
+  titleBarId   String?
+  iconUrl      String?
+  createdAt    DateTime                @default(now())
+
+  medal        Medal?                  @relation(fields: [medalId], references: [id])
+  titleBar     TitleBar?               @relation(fields: [titleBarId], references: [id])
+  characterAchievements CharacterAchievement[]
+
+  @@map("achievements")
+}
+
+model CharacterAchievement {
+  id                 String        @id @default(uuid())
+  characterId        String
+  achievementId      String
+  progress           Int           @default(0)
+  completedAt        DateTime?
+  enlightenmentEarned Int          @default(0)
+
+  character          Character     @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  achievement        Achievement   @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, achievementId])
+  @@map("character_achievements")
+}
+
+model Medal {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  tier        MedalTier
+  iconUrl     String?
+  achievements Achievement[]
+
+  @@map("medals")
+}
+
+model TitleBar {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  styleCss    String?
+  achievements Achievement[]
+
+  @@map("title_bars")
+}

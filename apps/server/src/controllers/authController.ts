@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 
 export async function register(req: Request, res: Response) {
   try {
-
     const { email, password, username } = req.body;
 
     if (!email || !password || !username) {
@@ -18,7 +17,6 @@ export async function register(req: Request, res: Response) {
     if (existingUser) return res.status(400).json({ error: 'Email already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
 
     const user = await prisma.user.create({
       data: {
@@ -32,6 +30,7 @@ export async function register(req: Request, res: Response) {
 
     res.status(201).json({ message: 'User registered successfully', userId: user.id });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ error: 'Something went wrong' });
   }
 }

@@ -103,9 +103,6 @@ importers:
 
   apps/server:
     dependencies:
-      '@prisma/client':
-        specifier: 5.15.0
-        version: 5.15.0(prisma@5.15.0)
       bcrypt:
         specifier: 5.1.1
         version: 5.1.1
@@ -124,9 +121,6 @@ importers:
       node-cron:
         specifier: 3.0.3
         version: 3.0.3
-      prisma:
-        specifier: 5.15.0
-        version: 5.15.0
       socket.io:
         specifier: 4.7.5
         version: 4.7.5
@@ -134,6 +128,18 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
+      '@prisma/client':
+        specifier: 5.15.0
+        version: 5.15.0(prisma@5.15.0)
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
+      prisma:
+        specifier: 5.15.0
+        version: 5.15.0
+      prisma-multischema:
+        specifier: ^1.1.4
+        version: 1.1.4
       ts-node-dev:
         specifier: 2.0.0
         version: 2.0.0(@types/node@24.1.0)(typescript@5.5.4)
@@ -2488,6 +2494,10 @@ packages:
   pretty-format@30.0.5:
     resolution: {integrity: sha512-D1tKtYvByrBkFLe2wHJl2bwMJIiT8rW+XA+TiataH79/FszLQMrpGEvzUVkzPau7OCO0Qnrhpe87PqtOAIB8Yw==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  prisma-multischema@1.1.4:
+    resolution: {integrity: sha512-38tQy7T8yIfdGNAOjhLuP/ZrmdWaPaYXPE1au7rLHDm5h5GFHFAtouVD2ihsSnXT0L1VSWd/yxNUOlsvKOcFZQ==}
+    hasBin: true
 
   prisma@5.15.0:
     resolution: {integrity: sha512-JA81ACQSCi3a7NUOgonOIkdx8PAVkO+HbUOxmd00Yb8DgIIEpr2V9+Qe/j6MLxIgWtE/OtVQ54rVjfYRbZsCfw==}
@@ -5701,6 +5711,8 @@ snapshots:
       '@jest/schemas': 30.0.5
       ansi-styles: 5.2.0
       react-is: 18.3.1
+
+  prisma-multischema@1.1.4: {}
 
   prisma@5.15.0:
     dependencies:

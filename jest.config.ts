@@ -1,4 +1,3 @@
-// jest.config.ts
 import type { Config } from 'jest';
 
 const config: Config = {
@@ -12,15 +11,18 @@ const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
 
+  // Root directory for Jest to look for tests
   roots: ['<rootDir>/apps/server/tests'],
 
+  // Setup files after environment setup
   setupFilesAfterEnv: ['<rootDir>/apps/server/tests/setup.ts'],
 
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/apps/server/tsconfig.json',
+        // Use the test-specific tsconfig to avoid rootDir issues
+        tsconfig: '<rootDir>/apps/server/tsconfig.test.json',
       },
     ],
   },

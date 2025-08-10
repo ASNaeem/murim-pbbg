@@ -1,0 +1,75 @@
+enum TechniqueType {
+  ATTACK
+  MOVEMENT
+}
+
+enum CharacterStat {
+  ATTACK
+  DEFENSE
+  EVASION
+  ACCURACY
+  WISDOM
+  INTELLIGENCE
+  CHARISMA
+  CRITCHANCE
+}
+
+enum MedalTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum AchievementCategory {
+  COMBAT_ARTS
+  NEURAL_INTRUSION
+  FORGECRAFT
+  QI_AUGMENTATION
+  STREET_INFLUENCE
+  EXPLORATION
+}
+
+enum SpecialEffect {
+  BLEED
+  POISON
+  STUN
+  PARALYZE
+}
+
+enum ItemType {
+  EQUIPMENT
+  CONSUMABLE
+}
+
+enum EquipmentSlot {
+  HEAD
+  BODY
+  LEGS
+  FEET
+  HANDS
+  WEAPON
+  ACCESSORY
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum Alignment {
+  ORTHODOX
+  UNORTHODOX
+  NEUTRAL
+}
+
+enum PvPActionType {
+  ATTACK
+  TECHNIQUE
+  DEFEND
+  DODGE
+  USE_ITEM
+}

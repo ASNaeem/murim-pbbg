@@ -1,0 +1,49 @@
+model PvPMatch {
+  id            String         @id @default(uuid())
+  attackerId    String
+  defenderId    String
+  attackerDamage Int
+  defenderDamage Int
+  winnerId      String?        // null if draw
+  startedAt     DateTime       @default(now())
+  endedAt       DateTime?
+
+  attacker      Character      @relation("AttackerMatches", fields: [attackerId], references: [id])
+  defender      Character      @relation("DefenderMatches", fields: [defenderId], references: [id])
+  winner        Character?     @relation("WinnerMatches", fields: [winnerId], references: [id])
+
+  pvpActions    PvPAction[]
+
+  @@index([attackerId])
+  @@index([defenderId])
+}
+
+model PvPAction {
+  id          String      @id @default(uuid())
+  matchId     String
+  characterId String
+  actionType  PvPActionType
+  techniqueId String?     // optional if technique used
+  damageDone  Int         @default(0)
+  hitSuccess  Boolean
+  criticalHit Boolean
+  createdAt   DateTime    @default(now())
+
+  match       PvPMatch    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  character   Character   @relation(fields: [characterId], references: [id])
+  technique   Technique?  @relation(fields: [techniqueId], references: [id])
+
+  @@index([matchId])
+  @@index([characterId])
+}
+
+model PvPRating {
+  id          String      @id @default(uuid())
+  characterId String      @unique
+  rating      Int         @default(1500)  // Initial ELO rating
+  wins        Int         @default(0)
+  losses      Int         @default(0)
+  draws       Int         @default(0)
+
+  character   Character   @relation(fields: [characterId], references: [id])
+}

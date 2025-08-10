@@ -1,0 +1,56 @@
+model Item {
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  type        ItemType
+  rarity      Rarity         @default(COMMON)
+  equipment   Equipment?
+  consumable  Consumable?
+  inventory   InventoryItem[]
+
+  @@map("items")
+}
+
+model Equipment {
+  id           String          @id @default(uuid())
+  itemId       String          @unique
+  slot         EquipmentSlot
+  attack       Int             @default(0)
+  defense      Int             @default(0)
+  evasion      Int             @default(0)
+  accuracy     Int             @default(0)
+  wisdom       Int             @default(0)
+  intelligence Int             @default(0)
+  charisma     Int             @default(0)
+  quality      Int             @default(100)
+  specialEffect SpecialEffect?
+
+  item         Item            @relation(fields: [itemId], references: [id])
+
+  @@map("equipments")
+}
+
+model Consumable {
+  id          String   @id @default(uuid())
+  itemId      String   @unique
+  effect      String
+  amount      Int      @default(0)
+  item        Item     @relation(fields: [itemId], references: [id])
+
+  @@map("consumables")
+}
+
+model InventoryItem {
+  id                   String      @id @default(uuid())
+  characterId           String
+  itemId                String
+  quantity              Int         @default(1)
+  equipped              Boolean     @default(false)
+  equippedByCharacterId String?
+  character             Character   @relation(fields: [characterId], references: [id])
+  item                  Item        @relation(fields: [itemId], references: [id])
+  equippedBy            Character?  @relation("EquippedItems", fields: [equippedByCharacterId], references: [id])
+
+  @@map("inventory_items")
+  @@unique([equippedByCharacterId, itemId], name: "unique_equipped_slot")
+}

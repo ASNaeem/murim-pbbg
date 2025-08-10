@@ -8,9 +8,35 @@ dotenv.config();
 
 const app = express();
 
+// ✅ CORS: Must come first
+
+// Get allowed origins from .env
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(origin => origin.trim()) || [];
+
+
+// Manual global OPTIONS handler to guarantee CORS headers
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+  const origin = typeof req.headers.origin === 'string' ? req.headers.origin : '';
+  res.header('Access-Control-Allow-Origin', allowedOrigins.includes(origin) ? origin : '');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// Catch-all OPTIONS handler for CORS preflight (must be first)
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true, // only if you're using cookies or sessions
+  origin: allowedOrigins,
+  credentials: true, // only if you're using cookies
 }));
 
 

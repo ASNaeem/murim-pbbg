@@ -8,6 +8,11 @@ export interface AuthRequest extends Request {
 }
 
 export function authenticateToken(req: AuthRequest, res: Response, next: NextFunction) {
+  // Skip token check for CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Expecting "Bearer <token>"
 
@@ -20,3 +25,4 @@ export function authenticateToken(req: AuthRequest, res: Response, next: NextFun
     next();
   });
 }
+

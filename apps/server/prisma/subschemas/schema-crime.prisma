@@ -1,0 +1,26 @@
+model CrimeActivity {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  difficulty  Int         // 1-10 scale
+  baseReward  Int         // silver taels reward
+  cooldownSec Int
+  keyStats    CharacterStat[]
+  createdAt   DateTime    @default(now())
+  crimes      CharacterCrime[]
+}
+
+model CharacterCrime {
+  id              String     @id @default(uuid())
+  characterId     String
+  crimeActivityId String
+  progress        Int        @default(0)
+  lastAttemptAt   DateTime?
+  successCount    Int        @default(0)
+  failureCount    Int        @default(0)
+
+  character       Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  crimeActivity   CrimeActivity @relation(fields: [crimeActivityId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, crimeActivityId])
+}

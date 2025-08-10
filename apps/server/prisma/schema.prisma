@@ -1,12 +1,298 @@
-generator client {
-  provider = "prisma-client-js"
+//🧩Don't Edit this file.✨Generated in Sun Aug 10 2025 19:03:21 GMT+0000 (Coordinated Universal Time)✨
+model Achievement {
+  id           String                  @id @default(uuid())
+  name         String
+  description  String
+  category     AchievementCategory
+  tier         Int                     @default(1)
+  targetValue  Int
+  medalId      String?
+  titleBarId   String?
+  iconUrl      String?
+  createdAt    DateTime                @default(now())
+
+  medal        Medal?                  @relation(fields: [medalId], references: [id])
+  titleBar     TitleBar?               @relation(fields: [titleBarId], references: [id])
+  characterAchievements CharacterAchievement[]
+
+  @@map("achievements")
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+model CharacterAchievement {
+  id                 String        @id @default(uuid())
+  characterId        String
+  achievementId      String
+  progress           Int           @default(0)
+  completedAt        DateTime?
+  enlightenmentEarned Int          @default(0)
+
+  character          Character     @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  achievement        Achievement   @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, achievementId])
+  @@map("character_achievements")
 }
 
+model Medal {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  tier        MedalTier
+  iconUrl     String?
+  achievements Achievement[]
+
+  @@map("medals")
+}
+
+model TitleBar {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  styleCss    String?
+  achievements Achievement[]
+
+  @@map("title_bars")
+}
+model CrimeActivity {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  difficulty  Int         // 1-10 scale
+  baseReward  Int         // silver taels reward
+  cooldownSec Int
+  keyStats    CharacterStat[]
+  createdAt   DateTime    @default(now())
+  crimes      CharacterCrime[]
+}
+
+model CharacterCrime {
+  id              String     @id @default(uuid())
+  characterId     String
+  crimeActivityId String
+  progress        Int        @default(0)
+  lastAttemptAt   DateTime?
+  successCount    Int        @default(0)
+  failureCount    Int        @default(0)
+
+  character       Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  crimeActivity   CrimeActivity @relation(fields: [crimeActivityId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, crimeActivityId])
+}
+enum TechniqueType {
+  ATTACK
+  MOVEMENT
+}
+
+enum CharacterStat {
+  ATTACK
+  DEFENSE
+  EVASION
+  ACCURACY
+  WISDOM
+  INTELLIGENCE
+  CHARISMA
+  CRITCHANCE
+}
+
+enum MedalTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum AchievementCategory {
+  COMBAT_ARTS
+  NEURAL_INTRUSION
+  FORGECRAFT
+  QI_AUGMENTATION
+  STREET_INFLUENCE
+  EXPLORATION
+}
+
+enum SpecialEffect {
+  BLEED
+  POISON
+  STUN
+  PARALYZE
+}
+
+enum ItemType {
+  EQUIPMENT
+  CONSUMABLE
+}
+
+enum EquipmentSlot {
+  HEAD
+  BODY
+  LEGS
+  FEET
+  HANDS
+  WEAPON
+  ACCESSORY
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum Alignment {
+  ORTHODOX
+  UNORTHODOX
+  NEUTRAL
+}
+
+enum PvPActionType {
+  ATTACK
+  TECHNIQUE
+  DEFEND
+  DODGE
+  USE_ITEM
+}
+model Item {
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  type        ItemType
+  rarity      Rarity         @default(COMMON)
+  equipment   Equipment?
+  consumable  Consumable?
+  inventory   InventoryItem[]
+
+  @@map("items")
+}
+
+model Equipment {
+  id           String          @id @default(uuid())
+  itemId       String          @unique
+  slot         EquipmentSlot
+  attack       Int             @default(0)
+  defense      Int             @default(0)
+  evasion      Int             @default(0)
+  accuracy     Int             @default(0)
+  wisdom       Int             @default(0)
+  intelligence Int             @default(0)
+  charisma     Int             @default(0)
+  quality      Int             @default(100)
+  specialEffect SpecialEffect?
+
+  item         Item            @relation(fields: [itemId], references: [id])
+
+  @@map("equipments")
+}
+
+model Consumable {
+  id          String   @id @default(uuid())
+  itemId      String   @unique
+  effect      String
+  amount      Int      @default(0)
+  item        Item     @relation(fields: [itemId], references: [id])
+
+  @@map("consumables")
+}
+
+model InventoryItem {
+  id                   String      @id @default(uuid())
+  characterId           String
+  itemId                String
+  quantity              Int         @default(1)
+  equipped              Boolean     @default(false)
+  equippedByCharacterId String?
+  character             Character   @relation(fields: [characterId], references: [id])
+  item                  Item        @relation(fields: [itemId], references: [id])
+  equippedBy            Character?  @relation("EquippedItems", fields: [equippedByCharacterId], references: [id])
+
+  @@map("inventory_items")
+  @@unique([equippedByCharacterId, itemId], name: "unique_equipped_slot")
+}
+model PvPMatch {
+  id            String         @id @default(uuid())
+  attackerId    String
+  defenderId    String
+  attackerDamage Int
+  defenderDamage Int
+  winnerId      String?        // null if draw
+  startedAt     DateTime       @default(now())
+  endedAt       DateTime?
+
+  attacker      Character      @relation("AttackerMatches", fields: [attackerId], references: [id])
+  defender      Character      @relation("DefenderMatches", fields: [defenderId], references: [id])
+  winner        Character?     @relation("WinnerMatches", fields: [winnerId], references: [id])
+
+  pvpActions    PvPAction[]
+
+  @@index([attackerId])
+  @@index([defenderId])
+}
+
+model PvPAction {
+  id          String      @id @default(uuid())
+  matchId     String
+  characterId String
+  actionType  PvPActionType
+  techniqueId String?     // optional if technique used
+  damageDone  Int         @default(0)
+  hitSuccess  Boolean
+  criticalHit Boolean
+  createdAt   DateTime    @default(now())
+
+  match       PvPMatch    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  character   Character   @relation(fields: [characterId], references: [id])
+  technique   Technique?  @relation(fields: [techniqueId], references: [id])
+
+  @@index([matchId])
+  @@index([characterId])
+}
+
+model PvPRating {
+  id          String      @id @default(uuid())
+  characterId String      @unique
+  rating      Int         @default(1500)  // Initial ELO rating
+  wins        Int         @default(0)
+  losses      Int         @default(0)
+  draws       Int         @default(0)
+
+  character   Character   @relation(fields: [characterId], references: [id])
+}
+model Technique {
+  id           String         @id @default(uuid())
+  name         String
+  description  String
+  techniqueType TechniqueType
+  weaponSlot   EquipmentSlot?
+  cooldownSec  Int?
+  durationSec  Int?
+  buffs        Buff[]
+
+  createdAt    DateTime       @default(now())
+}
+
+model Buff {
+  id           String       @id @default(uuid())
+  techniqueId  String
+  stat         CharacterStat
+  amount       Float
+
+  technique    Technique    @relation(fields: [techniqueId], references: [id])
+}
+
+model CharacterTechnique {
+  id           String     @id @default(uuid())
+  characterId  String
+  techniqueId  String
+  unlockedAt   DateTime   @default(now())
+
+  character    Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  technique    Technique  @relation(fields: [techniqueId], references: [id])
+
+  @@unique([characterId, techniqueId])
+  @@map("character_techniques")
+}
 model User {
   id         String     @id @default(uuid())
   email      String     @unique
@@ -19,30 +305,34 @@ model User {
 }
 
 model Character {
-  id           String   @id @default(uuid())
-  userId       String   @unique
+  id           String                @id @default(uuid())
+  userId       String                @unique
   name         String
-  silverTaels  Int      @default(0)
-  health       Int      @default(100)
-  stamina      Int      @default(100)
-  maxStamina   Int      @default(100)
-  attack       Int      @default(5)
-  defense      Int      @default(5)
-  evasion      Int      @default(5)
-  accuracy     Int      @default(5)
-  wisdom       Int      @default(5)
-  intelligence Int      @default(5)
-  charisma     Int      @default(5)
-  alignment    Alignment @default(NEUTRAL)
-  lastTick     DateTime  @default(now())
+  silverTaels  Int                   @default(0)
+  health       Int                   @default(100)
+  stamina      Int                   @default(100)
+  maxStamina   Int                   @default(100)
+  attack       Int                   @default(5)
+  defense      Int                   @default(5)
+  evasion      Int                   @default(5)
+  accuracy     Int                   @default(5)
+  wisdom       Int                   @default(5)
+  intelligence Int                   @default(5)
+  charisma     Int                   @default(5)
+  critChance   Float                 @default(0)
+  alignment    Alignment             @default(NEUTRAL)
+  lastTick     DateTime              @default(now())
 
-  user         User      @relation(fields: [userId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
+  inventory    InventoryItem[]
+  equipped     InventoryItem[]       @relation("EquippedItems")
+  achievements CharacterAchievement[]
+  techniques   CharacterTechnique[]
+  crimes       CharacterCrime[]
+  attackerMatches PvPMatch[]         @relation("AttackerMatches")
+  defenderMatches PvPMatch[]         @relation("DefenderMatches")
+  winnerMatches   PvPMatch[]         @relation("WinnerMatches")
+  pvpRating    PvPRating?
 
   @@map("characters")
-}
-
-enum Alignment {
-  ORTHODOX
-  UNORTHODOX
-  NEUTRAL
 }
